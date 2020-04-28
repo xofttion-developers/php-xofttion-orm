@@ -1,0 +1,22 @@
+{
+    "name": "xofttion/orm",
+    "type": "library",
+    "license": "MIT",
+    "description": "Librería que proporciona un conjunto de clase para implementar los principios de mapeo objeto-relacional (ORM)",
+    "authors": [
+        {
+            "name": "Daniel Andres Castillo Pedroza",
+            "email": "ing.dacastillop@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "xofttion/kernel" : "1.*",
+        "illuminate/database": "5.8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Xofttion\\ORM\\": "src/"
+        }
+    }
+}
