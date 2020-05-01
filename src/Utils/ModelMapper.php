@@ -63,18 +63,18 @@ class ModelMapper implements IModelMapper {
         return $formatArray; // Retornando array formateado resultante
     }
     
-    public function getAggregationsFormat(array $aggregations): array {
-        $eloquentAggregations = []; // Agregaciones en formato de Eloquent
+    public function getRelationshipsFormat(array $relationships): array {
+        $eloquentRelations = []; // Agregaciones en formato de Eloquent
         
-        foreach ($aggregations as $key => $value) {
+        foreach ($relationships as $key => $value) {
             if (is_int($key)) {
-                array_push($eloquentAggregations, $value); // Nombre de la relación
+                array_push($eloquentRelations, $value); // Nombre de la relación
             } else {
-                $eloquentAggregations[$key] = $this->getEloquentQuery($value);
+                $eloquentRelations[$key] = $this->getEloquentQuery($value);
             }
         }
         
-        return $eloquentAggregations; // Retornando agregaciones del model
+        return $eloquentRelations; // Retornando relaciones del modelo
     }
     
     // Métodos de la clase ModelMapper
@@ -113,7 +113,7 @@ class ModelMapper implements IModelMapper {
      */
     private function getEloquentQuery($value): Closure {
         return function ($query) use ($value) {
-            return $query->with($this->getAggregationsFormat($value));
+            return $query->with($this->getRelationshipsFormat($value));
         };
     }
 }

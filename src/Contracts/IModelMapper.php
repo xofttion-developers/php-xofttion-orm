@@ -24,8 +24,8 @@ interface IModelMapper {
     
     /**
      * 
-     * @param array $aggregations
+     * @param array $relationships
      * @return array
      */
-    public function getAggregationsFormat(array $aggregations): array;
+    public function getRelationshipsFormat(array $relationships): array;
 }

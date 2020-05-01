@@ -76,7 +76,7 @@ interface IStorage {
      * @param IModel $model
      * @return void
      */
-    public function save(IModel $model): void;
+    public function safeguard(IModel $model): void;
     
     /**
      * 

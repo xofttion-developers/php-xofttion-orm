@@ -44,10 +44,10 @@ interface IModelORM {
 
     /**
      * 
-     * @param array|null $aggregations 
+     * @param array|null $relationships 
      * @return Collection
      */
-    public function catalog(?array $aggregations = null): Collection;
+    public function catalog(?array $relationships = null): Collection;
 
     /**
      * 
@@ -60,10 +60,10 @@ interface IModelORM {
     /**
      * 
      * @param int $id
-     * @param array|null $aggregations
+     * @param array|null $relationships
      * @return IModelORM|null
      */
-    public function record(int $id, ?array $aggregations = null): ?IModelORM;
+    public function record(int $id, ?array $relationships = null): ?IModelORM;
     
     /**
      * 
@@ -88,9 +88,43 @@ interface IModelORM {
     
     /**
      * 
+     * @param string $key
+     * @param object $value
+     * @return void
+     */
+    public function attachAggregation(string $key, $value): void;
+    
+    /**
+     * 
+     * @param string $key
+     * @return object
+     */
+    public function getAggregation(string $key);
+    
+    /**
+     * 
+     * @param string $key
+     * @return void
+     */
+    public function detachAggregation(string $key): void;
+    
+    /**
+     * 
+     * @return void
+     */
+    public function cleanAggregations(): void;
+
+    /**
+     * 
+     * @return IAggregations
+     */
+    public function getAggregations(): IAggregations;
+    
+    /**
+     * 
      * @return array
      */
-    public function getAggregations(): array;
+    public function getRelationships(): array;
     
     /**
      * 

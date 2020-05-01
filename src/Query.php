@@ -93,14 +93,14 @@ class Query implements IQuery {
         return $this->getBuilder($this->getModel())->select($columns)->get();
     }
 
-    public function catalog(array $aggregations = array()): Collection {
+    public function catalog(array $relationships = array()): Collection {
         $model = $this->getModel(); // Modelo para gestionar consulta
         
         if ($model instanceof IModel) {
-            $aggregations = $model->getMapper()->getAggregationsFormat($aggregations);
+            $relationships = $model->getMapper()->getRelationshipsFormat($relationships);
         }
         
-        return $this->getBuilder($model)->with($aggregations)->get();
+        return $this->getBuilder($model)->with($relationships)->get();
     }
 
     public function find(?int $id = null, array $columns = ["*"]): ?IModel {
@@ -113,7 +113,7 @@ class Query implements IQuery {
         return $this->getBuilder($model)->select($columns)->first();
     }
 
-    public function record(?int $id = null, array $aggregations = array()): ?IModel {
+    public function record(?int $id = null, array $relationships = array()): ?IModel {
         $model = $this->getModel(); // Modelo para gestionar consulta
         
         if (!is_null($id)) {
@@ -121,10 +121,10 @@ class Query implements IQuery {
         } // Se debe agregar filtro de PrimaryKey
         
         if ($model instanceof IModel) {
-            $aggregations = $model->getMapper()->getAggregationsFormat($aggregations);
+            $relationships = $model->getMapper()->getRelationshipsFormat($relationships);
         }
         
-        return $this->getBuilder($model)->with($aggregations)->first();
+        return $this->getBuilder($model)->with($relationships)->first();
     }
     
     public function update(int $id, array $data): ?IModel {

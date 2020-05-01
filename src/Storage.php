@@ -75,7 +75,7 @@ class Storage implements IStorage {
         $this->getQuery()->update($id, $data);
     }
 
-    public function save(IModel $model): void {
+    public function safeguard(IModel $model): void {
         $model->save(); $model->refresh();
     }
     
