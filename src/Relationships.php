@@ -5,12 +5,12 @@ namespace Xofttion\ORM;
 use Xofttion\Kernel\Contracts\IDataDictionary;
 use Xofttion\Kernel\Structs\DataDictionary;
 
-use Xofttion\ORM\Contracts\IAggregations;
-use Xofttion\ORM\Contracts\IAggregation;
+use Xofttion\ORM\Contracts\IRelationships;
+use Xofttion\ORM\Contracts\IRelationship;
 
-class Aggregations implements IAggregations {
+class Relationships implements IRelationships {
     
-    // Atributos de la clase Aggregations
+    // Atributos de la clase Relationships
     
     /**
      *
@@ -24,25 +24,25 @@ class Aggregations implements IAggregations {
      */
     private $childrens;
     
-    // Constructor de la clase Aggregations
+    // Constructor de la clase Relationships
     
     public function __construct() {
         $this->parents   = new DataDictionary();
         $this->childrens = new DataDictionary();
     }
     
-    // Métodos sobrescritos de la interfaz IAggregations
+    // Métodos sobrescritos de la interfaz IRelationships
     
-    public function attachParent(string $key, IAggregation $aggregation): void {
-        $this->parents->attach($key, $aggregation);
+    public function attachParent(string $key, IRelationship $relationship): void {
+        $this->parents->attach($key, $relationship);
     }
     
     public function getParents(): IDataDictionary {
         return $this->parents;
     }
     
-    public function attachChildren(string $key, IAggregation $aggregation): void {
-        $this->childrens->attach($key, $aggregation);
+    public function attachChildren(string $key, IRelationship $relationship): void {
+        $this->childrens->attach($key, $relationship);
     }
     
     public function getChildrens(): IDataDictionary {

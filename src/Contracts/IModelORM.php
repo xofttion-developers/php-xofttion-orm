@@ -28,6 +28,13 @@ interface IModelORM {
      * @return void
      */
     public function mapArray(array $data): void;
+    
+    /**
+     * 
+     * @param array $data
+     * @return void
+     */
+    public function setData(array $data): void;
 
     /**
      *
@@ -44,10 +51,10 @@ interface IModelORM {
 
     /**
      * 
-     * @param array|null $relationships 
+     * @param array|null $references 
      * @return Collection
      */
-    public function catalog(?array $relationships = null): Collection;
+    public function catalog(?array $references = null): Collection;
 
     /**
      * 
@@ -60,10 +67,10 @@ interface IModelORM {
     /**
      * 
      * @param int $id
-     * @param array|null $relationships
+     * @param array|null $references
      * @return IModelORM|null
      */
-    public function record(int $id, ?array $relationships = null): ?IModelORM;
+    public function record(int $id, ?array $references = null): ?IModelORM;
     
     /**
      * 
@@ -92,39 +99,39 @@ interface IModelORM {
      * @param object $value
      * @return void
      */
-    public function attachAggregation(string $key, $value): void;
+    public function attachRelationship(string $key, $value): void;
     
     /**
      * 
      * @param string $key
      * @return object
      */
-    public function getAggregation(string $key);
+    public function getRelationship(string $key);
     
     /**
      * 
      * @param string $key
      * @return void
      */
-    public function detachAggregation(string $key): void;
+    public function detachRelationship(string $key): void;
     
     /**
      * 
      * @return void
      */
-    public function cleanAggregations(): void;
+    public function cleanRelationships(): void;
 
     /**
      * 
-     * @return IAggregations
+     * @return IRelationships|null
      */
-    public function getAggregations(): IAggregations;
+    public function getRelationships(): ?IRelationships;
     
     /**
      * 
      * @return array
      */
-    public function getRelationships(): array;
+    public function getReferences(): array;
     
     /**
      * 

@@ -25,9 +25,9 @@ interface IQuery {
     
     /**
      * 
-     * @return IModel|null
+     * @return IModel
      */
-    public function getModel(): ?IModel;
+    public function getModel(): IModel;
 
     /**
      * 
@@ -46,10 +46,10 @@ interface IQuery {
 
     /**
      * 
-     * @param array $aggregations
+     * @param array|null $references
      * @return Collection
      */
-    public function catalog(array $aggregations = []): Collection;
+    public function catalog(?array $references = null): Collection;
     
     /**
      * 
@@ -62,10 +62,10 @@ interface IQuery {
     /**
      * 
      * @param int|null $id
-     * @param array $aggregations
+     * @param array|null $references
      * @return IModel|null
      */
-    public function record(?int $id = null, array $aggregations = []): ?IModel;
+    public function record(?int $id = null, ?array $references = null): ?IModel;
     
     /**
      * 

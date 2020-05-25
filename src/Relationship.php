@@ -4,11 +4,11 @@ namespace Xofttion\ORM;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-use Xofttion\ORM\Contracts\IAggregation;
+use Xofttion\ORM\Contracts\IRelationship;
 
-class Aggregation implements IAggregation {
+class Relationship implements IRelationship {
     
-    // Atributos de la clase Aggregation
+    // Atributos de la clase Relationship
     
     /**
      *
@@ -22,7 +22,7 @@ class Aggregation implements IAggregation {
      */
     private $value;
     
-    // Constructor de la clase Aggregation
+    // Constructor de la clase Relationship
     
     /**
      * 

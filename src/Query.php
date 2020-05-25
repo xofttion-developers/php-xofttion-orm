@@ -72,12 +72,10 @@ class Query implements IQuery {
         return $this->context;
     }
 
-    public function getModel(): ?IModel {
+    public function getModel(): IModel {        
         $model = (new $this->model()); // Instanciando
         
-        if ($model instanceof IModel) {
-            $model->setContext($this->getContext()); 
-        } // Definiendo conexión del contexto
+        $model->setContext($this->getContext()); 
         
         return $model; // Retornando modelo generado
     }
@@ -93,14 +91,11 @@ class Query implements IQuery {
         return $this->getBuilder($this->getModel())->select($columns)->get();
     }
 
-    public function catalog(array $relationships = array()): Collection {
-        $model = $this->getModel(); // Modelo para gestionar consulta
+    public function catalog(?array $references = null): Collection {
+        $model     = $this->getModel(); // Modelo para gestionar consulta
+        $relations = $this->getReferencesFormat($model, $references);
         
-        if ($model instanceof IModel) {
-            $relationships = $model->getMapper()->getRelationshipsFormat($relationships);
-        }
-        
-        return $this->getBuilder($model)->with($relationships)->get();
+        return $this->getBuilder($model)->with($relations)->get();
     }
 
     public function find(?int $id = null, array $columns = ["*"]): ?IModel {
@@ -113,28 +108,24 @@ class Query implements IQuery {
         return $this->getBuilder($model)->select($columns)->first();
     }
 
-    public function record(?int $id = null, array $relationships = array()): ?IModel {
-        $model = $this->getModel(); // Modelo para gestionar consulta
+    public function record(?int $id = null, ?array $references = null): ?IModel {
+        $model     = $this->getModel(); // Modelo para gestionar consulta
+        $relations = $this->getReferencesFormat($model, $references);
         
         if (!is_null($id)) {
             $this->whereEqual($model->getPrimaryKey(), $id);
         } // Se debe agregar filtro de PrimaryKey
         
-        if ($model instanceof IModel) {
-            $relationships = $model->getMapper()->getRelationshipsFormat($relationships);
-        }
-        
-        return $this->getBuilder($model)->with($relationships)->first();
+        return $this->getBuilder($model)->with($relations)->first();
     }
     
     public function update(int $id, array $data): ?IModel {
         $model = $this->find($id); // Modelo para gestionar proceso
         
         if (!is_null($model)) {
-            $dataFormat = $model->getDataFormat($data);
-            $this->attachNulleableValues($model, $dataFormat);
+            $dataFormat = $this->attachNulleableValues($model, $data);
             
-            $model->mapArray($dataFormat); $model->save();
+            $model->setData($dataFormat); $model->save();
             
             return $model; // Retornando datos del objeto actualizado
         } else {
@@ -149,9 +140,7 @@ class Query implements IQuery {
             $this->whereEqual($model->getPrimaryKey(), $id);
         } // Se debe agregar filtro de PrimaryKey
         
-        $dataFormat = $model->getDataFormat($data);
-        $this->dettachModifiableValues($model, $dataFormat);
-        $this->attachNulleableValues($model, $dataFormat);
+        $dataFormat = $this->dettachModifiableValues($model, $data);
         
         $rows = $this->getBuilder($model, false)->update($dataFormat);
         
@@ -351,29 +340,52 @@ class Query implements IQuery {
     /**
      * 
      * @param IModel $model
-     * @param array $data
-     * @return void
+     * @param array $references
+     * @return array
      */
-    private function attachNulleableValues(IModel $model, array $data): void {
+    private function getReferencesFormat(IModel $model, ?array $references): array {
+        if (is_null($references)) {
+            return $model->getMapper()->getReferencesFormat($model->getReferences());
+        } else {
+            return $model->getMapper()->getReferencesFormat($references);
+        }
+    }
+
+    /**
+     * 
+     * @param IModel $model
+     * @param array $data
+     * @return array
+     */
+    private function attachNulleableValues(IModel $model, array $data): array {
+        $dataFormat = $model->getDataFormat($data); // Formateando
+        
         foreach ($model->getNulleables() as $nulleable) {
-            if (!isset($data[$nulleable])) {
-                $data[$nulleable] = null; // Adjuntado valor nulo
+            consolelog($nulleable);
+            if (!isset($dataFormat[$nulleable])) {
+                $dataFormat[$nulleable] = null; // Adjuntado valor nulo
             }
         }
+        
+        return $dataFormat; // Retornando datos del modelo formateado
     }
     
     /**
      * 
      * @param IModel $model
      * @param array $data
-     * @return void
+     * @return array
      */
-    private function dettachModifiableValues(IModel $model, array $data): void {
+    private function dettachModifiableValues(IModel $model, array $data): array {
+        $dataFormat = $this->attachNulleableValues($model, $data); // Formateando
+        
         foreach ($model->getModifiables() as $modifiable) {
-            if (isset($data[$modifiable])) {
-                unset($data[$modifiable]); // Removiendo clave inmodificable
+            if (isset($dataFormat[$modifiable])) {
+                unset($dataFormat[$modifiable]); // Removiendo clave inmodificable
             }
         }
+        
+        return $dataFormat; // Retornando datos del modelo formateado
     }
 
     /**

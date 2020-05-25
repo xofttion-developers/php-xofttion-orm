@@ -4,9 +4,9 @@ namespace Xofttion\ORM\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-interface IAggregation {
+interface IRelationship {
     
-    // Métodos de la interfaz IAggregation
+    // Métodos de la interfaz IRelationship
     
     /**
      * 

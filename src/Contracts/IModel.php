@@ -14,6 +14,6 @@ abstract class IModel extends Model implements IModelORM {
      * @return void
      */
     public function reaload(array $relationships): void {
-        $this->load($this->getMapper()->getRelationshipsFormat($relationships));
+        $this->load($this->getMapper()->getReferencesFormat($relationships));
     }
 }

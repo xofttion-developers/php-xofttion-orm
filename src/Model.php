@@ -16,7 +16,7 @@ use Xofttion\Kernel\Structs\DataDictionary;
 use Xofttion\ORM\Contracts\IModel;
 use Xofttion\ORM\Contracts\IModelORM;
 use Xofttion\ORM\Contracts\IModelMapper;
-use Xofttion\ORM\Contracts\IAggregations;
+use Xofttion\ORM\Contracts\IRelationships;
 use Xofttion\ORM\Utils\ModelMapper;
 use Xofttion\ORM\Utils\Builder;
 
@@ -28,25 +28,19 @@ class Model extends IModel {
      *
      * @var array 
      */
-    protected $conversionsDefault = [];
-
-    /**
-     *
-     * @var array 
-     */
     protected $conversions = [];
 
     /**
      *
      * @var array 
      */
-    protected $relationships = [];
+    protected $references = [];
     
     /**
      *
      * @var IDataDictionary 
      */
-    protected $aggregations;
+    protected $relationships;
     
     /**
      *
@@ -77,7 +71,7 @@ class Model extends IModel {
      */
     public function getDataFormat(array $data): array {
         return $this->getMapper()->getDataFormat($data, $this->getConversions());
-    }  
+    }
 
     // Métodos sobrescritos de la interfaz IModel
     
@@ -94,6 +88,12 @@ class Model extends IModel {
     public function mapArray(array $data): void {
         $this->getMapper()->ofArray($this, $data);
     }
+    
+    public function setData(array $data): void {
+        foreach ($data as $key => $value) {
+            $this[$key] = $value;
+        }
+    }
 
     public function register(array $data): void {
         $this->mapArray($data); $this->save();
@@ -103,16 +103,16 @@ class Model extends IModel {
         return $this->select($columns)->get();
     }
     
-    public function catalog(?array $aggregations = null): Collection {
-        return $this->with($this->getRelationshipsEloquent($aggregations))->get();
+    public function catalog(?array $references = null): Collection {
+        return $this->with($this->getReferencesEloquent($references))->get();
     }
 
     public function find(int $id, array $columns = ["*"]): ?IModelORM {
         return $this->select($columns)->where($this->getPrimaryKey(), $id)->first();
     }
 
-    public function record(int $id, ?array $aggregations = null): ?IModelORM {
-        return $this->where($this->getPrimaryKey(), $id)->with($this->getRelationshipsEloquent($aggregations))->first();
+    public function record(int $id, ?array $references = null): ?IModelORM {
+        return $this->where($this->getPrimaryKey(), $id)->with($this->getReferencesEloquent($references))->first();
     }
 
     public function modify(int $id, array $data): bool {
@@ -124,62 +124,63 @@ class Model extends IModel {
     }
 
     public function getConversions(): array {
-        return array_merge($this->conversionsDefault, $this->conversions);
+        return array_merge($this->getConversionsDefault(), $this->conversions);
     }
     
-    public function attachAggregation(string $key, $value): void {
-        if (is_null($this->aggregations)) {
-            $this->aggregations = new DataDictionary();
+    public function attachRelationship(string $key, $value): void {
+        if (is_null($this->relationships)) {
+            $this->relationships = new DataDictionary();
         }
         
         if (!is_null($value)) {
-            $this->aggregations->attach($key, $value); // Asignando
+            $this->relationships->attach($key, $value); // Asignando
         }
     }
     
-    public function getAggregation(string $key) {
-        return (is_null($this->aggregations)) ? null : $this->aggregations->getValue($key);
+    public function getRelationship(string $key) {
+        return (is_null($this->relationships)) ? null : $this->relationships->getValue($key);
     }
     
-    public function detachAggregation(string $key): void {
-        if (!is_null($this->aggregations)) {
-            $this->aggregations->detach($key); // Removiendo
+    public function detachRelationship(string $key): void {
+        if (!is_null($this->relationships)) {
+            $this->relationships->detach($key); // Removiendo
         }
     }
     
-    public function cleanAggregations(): void {
-        if (!is_null($this->aggregations)) {
-            $this->aggregations->clear(); // Limpiando
+    public function cleanRelationships(): void {
+        if (!is_null($this->relationships)) {
+            $this->relationships->clear(); // Limpiando
         }
     }
     
-    public function getAggregations(): IAggregations {
-        $aggregations = new Aggregations(); // Listando agregaciones del modelo
+    public function getRelationships(): ?IRelationships {
+        if (is_null($this->relationships)) {
+            return null; // Modelo no tiene relaciones establecidas
+        }
         
-        if (!is_null($this->aggregations)) {
-            $reflection = new ReflectionClass($this); // Reflexión
-            
-            foreach ($this->aggregations->values() as $key => $model) {
-                $relation = Reflection::obtainMethod($this, $key, $reflection);
+        $relationships = new Relationships(); // Relaciones del modelo
+        $reflection    = new ReflectionClass($this); // Reflexión
 
-                if (!is_null($relation)) {
-                    $aggregation = new Aggregation($relation, $model);
-                    
-                    if ($relation instanceof HasOneOrMany) {
-                        $aggregations->attachChildren($key, $aggregation);
-                    }
-                    else if ($relation instanceof BelongsTo) {
-                        $aggregations->attachParent($key, $aggregation);
-                    }
+        foreach ($this->relationships->values() as $key => $model) {
+            $relationMethod = Reflection::obtainMethod($this, $key, $reflection);
+
+            if (!is_null($relationMethod)) {
+                $relationship = new Relationship($relationMethod, $model);
+
+                if ($relationMethod instanceof HasOneOrMany) {
+                    $relationships->attachChildren($key, $relationship);
+                }
+                else if ($relationMethod instanceof BelongsTo) {
+                    $relationships->attachParent($key, $relationship);
                 }
             }
         }
         
-        return $aggregations; // Retornando agregaciones definidas del modelo
+        return $relationships; // Retornando agregaciones definidas del modelo
     }
     
-    public function getRelationships(): array {
-        return $this->relationships;
+    public function getReferences(): array {
+        return $this->references;
     }
     
     public function getModifiables(): array {
@@ -208,10 +209,18 @@ class Model extends IModel {
     
     /**
      * 
-     * @param array $relationships
      * @return array
      */
-    private function getRelationshipsEloquent(?array $relationships): array {
-        return $this->getMapper()->getRelationshipsFormat(is_null($relationships) ? $this->getRelationships() : $relationships);
+    protected function getConversionsDefault(): array {
+        return [];
+    }
+
+    /**
+     * 
+     * @param array $references
+     * @return array
+     */
+    private function getReferencesEloquent(?array $references): array {
+        return $this->getMapper()->getReferencesFormat(is_null($references) ? $this->getReferences() : $references);
     }
 }

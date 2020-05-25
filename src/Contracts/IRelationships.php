@@ -4,17 +4,17 @@ namespace Xofttion\ORM\Contracts;
 
 use Xofttion\Kernel\Contracts\IDataDictionary;
 
-interface IAggregations {
+interface IRelationships {
     
-    // Métodos de la interfaz IAggregations
+    // Métodos de la interfaz IRelationships
     
     /**
      * 
      * @param string $key
-     * @param IAggregation $aggregation
+     * @param IRelationship $relationship
      * @return void
      */
-    public function attachParent(string $key, IAggregation $aggregation): void;
+    public function attachParent(string $key, IRelationship $relationship): void;
 
     /**
      * 
@@ -25,10 +25,10 @@ interface IAggregations {
     /**
      * 
      * @param string $key
-     * @param IAggregation $aggregation
+     * @param IRelationship $relationship
      * @return void
      */
-    public function attachChildren(string $key, IAggregation $aggregation): void;
+    public function attachChildren(string $key, IRelationship $relationship): void;
     
     /**
      * 

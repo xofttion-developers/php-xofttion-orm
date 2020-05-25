@@ -3,6 +3,11 @@
     "type": "library",
     "license": "MIT",
     "description": "Librería que proporciona un conjunto de clase para implementar los principios de mapeo objeto-relacional (ORM)",
+    "keywords": [
+        "xofttion",
+        "orm",
+        "laravel"
+    ],
     "authors": [
         {
             "name": "Daniel Andres Castillo Pedroza",
@@ -11,7 +16,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "xofttion/kernel" : "dev-master",
+        "xofttion/kernel": "dev-master",
         "illuminate/database": "5.8.*"
     },
     "autoload": {

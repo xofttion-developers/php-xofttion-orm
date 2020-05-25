@@ -24,8 +24,8 @@ interface IModelMapper {
     
     /**
      * 
-     * @param array $relationships
+     * @param array $references
      * @return array
      */
-    public function getRelationshipsFormat(array $relationships): array;
+    public function getReferencesFormat(array $references): array;
 }

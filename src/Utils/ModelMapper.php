@@ -44,11 +44,9 @@ class ModelMapper implements IModelMapper {
             return null; // No se puede realizar mapeo del modelo
         } 
         
-        $result = $this->getDataFormat($data, $model->getConversions());
-        
-        foreach ($result as $key => $value) {
-            $model[$key] = $value;
-        } // Cargando los datos del objeto en el modelo
+        $model->setData(
+            $this->getDataFormat($data, $model->getConversions())
+        );
         
         return $model; // Retornando modelo con sus atributos cargados
     }
@@ -63,18 +61,18 @@ class ModelMapper implements IModelMapper {
         return $formatArray; // Retornando array formateado resultante
     }
     
-    public function getRelationshipsFormat(array $relationships): array {
-        $eloquentRelations = []; // Agregaciones en formato de Eloquent
+    public function getReferencesFormat(array $references): array {
+        $referencesFormat = []; // Agregaciones en formato de Eloquent
         
-        foreach ($relationships as $key => $value) {
+        foreach ($references as $key => $value) {
             if (is_int($key)) {
-                array_push($eloquentRelations, $value); // Nombre de la relación
+                array_push($referencesFormat, $value); // Nombre de la relación
             } else {
-                $eloquentRelations[$key] = $this->getEloquentQuery($value);
+                $referencesFormat[$key] = $this->getQueryReference($value);
             }
         }
         
-        return $eloquentRelations; // Retornando relaciones del modelo
+        return $referencesFormat; // Retornando relaciones del modelo
     }
     
     // Métodos de la clase ModelMapper
@@ -111,9 +109,9 @@ class ModelMapper implements IModelMapper {
      * @param object $value
      * @return Closure
      */
-    private function getEloquentQuery($value): Closure {
+    private function getQueryReference($value): Closure {
         return function ($query) use ($value) {
-            return $query->with($this->getRelationshipsFormat($value));
+            return $query->with($this->getReferencesFormat($value));
         };
     }
 }
