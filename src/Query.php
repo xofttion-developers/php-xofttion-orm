@@ -124,8 +124,10 @@ class Query implements IQuery {
         
         if (!is_null($model)) {
             $dataFormat = $this->attachNulleableValues($model, $data);
-            
-            $model->setData($dataFormat); $model->save();
+        
+            if (!empty($dataFormat)) {
+                $model->setData($dataFormat); $model->save();
+            }
             
             return $model; // Retornando datos del objeto actualizado
         } else {
@@ -136,11 +138,13 @@ class Query implements IQuery {
     public function safeguard(int $id, array $data, ?array $hidrations = null): ?IModel {
         $model = $this->getModel(); // Modelo para gestionar proceso
         
-        if (!is_null($id)) {
-            $this->whereEqual($model->getPrimaryKey(), $id);
-        } // Se debe agregar filtro de PrimaryKey
+        $this->whereEqual($model->getPrimaryKey(), $id); // Llave primaria
         
         $dataFormat = $this->dettachModifiableValues($model, $data);
+        
+        if (empty($dataFormat)) {
+            return null; // No hay datos definidos para la actualización
+        } 
         
         $rows = $this->getBuilder($model, false)->update($dataFormat);
         
@@ -157,7 +161,7 @@ class Query implements IQuery {
         $model = $this->getModel(); // Modelo para gestionar consulta
         
         if (!is_null($id)) {
-            $this->equal($model->getPrimaryKey(), $id);
+            $this->whereEqual($model->getPrimaryKey(), $id);
         } // Se debe agregar filtro de PrimaryKey
         
         return ($this->getBuilder($model, false)->delete() > 0);
@@ -361,7 +365,6 @@ class Query implements IQuery {
         $dataFormat = $model->getDataFormat($data); // Formateando
         
         foreach ($model->getNulleables() as $nulleable) {
-            consolelog($nulleable);
             if (!isset($dataFormat[$nulleable])) {
                 $dataFormat[$nulleable] = null; // Adjuntado valor nulo
             }
