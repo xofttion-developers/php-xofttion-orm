@@ -22,11 +22,6 @@ class Between extends Condition {
     // Métodos sobrescritos de la clase Condition
     
     public function flush(Builder $builder): void {
-        $builder->whereBetween(
-            $this->getColumn(),     // Columna de la operación
-            $this->getValue(),      // Valor de condición
-            $this->getValueOr(),    // Operador de concadenación
-            $this->isNot()          // Consulta esta en negación
-        );
+        $builder->whereBetween($this->getColumn(), $this->getValue(), $this->getValueOr(), $this->isNot());
     }
 }

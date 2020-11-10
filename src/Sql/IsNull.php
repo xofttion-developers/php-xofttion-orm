@@ -21,10 +21,6 @@ class IsNull extends Condition {
     // Métodos sobrescritos de la clase Condition
     
     public function flush(Builder $builder): void {
-        $builder->whereNull(
-            $this->getColumn(),     // Columna de la operación
-            $this->getValueOr(),    // Operador de concadenación
-            $this->isNot()          // Consulta esta en negación
-        );
+        $builder->whereNull($this->getColumn(), $this->getValueOr(), $this->isNot());
     }
 }

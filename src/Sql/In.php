@@ -22,11 +22,6 @@ class In extends Condition {
     // Métodos sobrescritos de la clase Condition
     
     public function flush(Builder $builder): void {
-        $builder->whereIn(
-            $this->getColumn(),     // Columna de la operación
-            $this->getValue(),      // Valor de condición
-            $this->getValueOr(),    // Operador de concadenación
-            $this->isNot()          // Consulta esta en negación
-        );
+        $builder->whereIn($this->getColumn(), $this->getValue(), $this->getValueOr(), $this->isNot());
     }
 }

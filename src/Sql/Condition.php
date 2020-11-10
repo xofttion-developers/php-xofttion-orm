@@ -101,12 +101,7 @@ class Condition implements IPredicate {
     }
 
     public function flush(Builder $builder): void {
-        $builder->where(
-            $this->getColumn(),     // Columna de la operación
-            $this->getOperator(),   // Operador de condición
-            $this->getValue(),      // Valor de condición
-            $this->getValueOr()     // Operador de concadenación
-        );
+        $builder->where($this->getColumn(), $this->getOperator(), $this->getValue(), $this->getValueOr());
     }
     
     // Métodos de la clase Condition

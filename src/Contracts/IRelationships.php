@@ -2,7 +2,7 @@
 
 namespace Xofttion\ORM\Contracts;
 
-use Xofttion\Kernel\Contracts\IDataDictionary;
+use Xofttion\Kernel\Contracts\IJson;
 
 interface IRelationships {
     
@@ -18,9 +18,9 @@ interface IRelationships {
 
     /**
      * 
-     * @return IDataDictionary
+     * @return IJson
      */
-    public function getParents(): IDataDictionary;
+    public function getParents(): IJson;
     
     /**
      * 
@@ -32,7 +32,7 @@ interface IRelationships {
     
     /**
      * 
-     * @return IDataDictionary
+     * @return IJson
      */
-    public function getChildrens(): IDataDictionary;
+    public function getChildrens(): IJson;
 }

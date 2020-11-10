@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-use Xofttion\Kernel\Contracts\IDataDictionary;
+use Xofttion\Kernel\Contracts\IJson;
 use Xofttion\Kernel\Utils\Reflection;
-use Xofttion\Kernel\Structs\DataDictionary;
+use Xofttion\Kernel\Structs\Json;
 
 use Xofttion\ORM\Contracts\IModel;
 use Xofttion\ORM\Contracts\IModelORM;
@@ -38,7 +38,7 @@ class Model extends IModel {
     
     /**
      *
-     * @var IDataDictionary 
+     * @var IJson 
      */
     protected $relationships;
     
@@ -129,7 +129,7 @@ class Model extends IModel {
     
     public function attachRelationship(string $key, $value): void {
         if (is_null($this->relationships)) {
-            $this->relationships = new DataDictionary();
+            $this->relationships = new Json();
         }
         
         if (!is_null($value)) {

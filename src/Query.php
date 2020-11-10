@@ -72,7 +72,7 @@ class Query implements IQuery {
         return $this->context;
     }
 
-    public function getModel(): IModel {        
+    public function getModel(): IModel {
         $model = (new $this->model()); // Instanciando
         
         $model->setContext($this->getContext()); 
@@ -168,81 +168,55 @@ class Query implements IQuery {
     }
 
     public function where(string $column, string $operator, $value): IQuery {
-        $this->getInstanceWhere()->condition($column, $operator, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->condition($column, $operator, $value); return $this;
     }
 
     public function orWhere(string $column, string $operator, $value): IQuery {
-        $this->getInstanceWhere()->condition($column, $operator, $value, true);
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->condition($column, $operator, $value, true); return $this;
     }
 
     public function whereEqual(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equal($column, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->equal($column, $value); return $this;
     }
 
     public function orWhereEqual(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equal($column, $value, true); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->equal($column, $value, true); return $this;
     }
 
     public function whereGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->greater($column, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->greater($column, $value); return $this;
     }
 
     public function orWhereGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->greater($column, $value, false); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->greater($column, $value, false); return $this; 
     }
 
     public function whereSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->smaller($column, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->smaller($column, $value); return $this;
     }
 
     public function orWhereSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->smaller($column, $value, true);
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->smaller($column, $value, true); return $this;
     }
 
     public function whereEqualGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalGreater($column, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->equalGreater($column, $value); return $this;
     }
 
     public function orWhereEqualGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalGreater($column, $value, true); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->equalGreater($column, $value, true); return $this;
     }
 
     public function whereEqualSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalSmaller($column, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->equalSmaller($column, $value); return $this;
     }
 
     public function orWhereEqualSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalSmaller($column, $value, true); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->equalSmaller($column, $value, true); return $this;
     }
 
     public function whereDifferent(string $column, $value): IQuery {
-        $this->getInstanceWhere()->different($column, $value); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->different($column, $value); return $this;
     }
 
     public function orWhereDifferent(string $column, $value): IQuery {
@@ -250,63 +224,43 @@ class Query implements IQuery {
     }
 
     public function whereIn(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->in($column, $value, false, $not); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->in($column, $value, false, $not); return $this;
     }
 
     public function orWhereIn(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->in($column, $value, true, $not); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->in($column, $value, true, $not); return $this;
     }
 
     public function whereBetween(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->between($column, $value, false, $not); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->between($column, $value, false, $not); return $this;
     }
 
     public function orWhereBetween(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->between($column, $value, true, $not);
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->between($column, $value, true, $not); return $this;
     }
 
     public function whereLike(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->like($column, $value, false, $not); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->like($column, $value, false, $not); return $this;
     }
 
     public function orWhereLike(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->like($column, $value, true, $not); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->like($column, $value, true, $not); return $this; 
     }
 
     public function whereIsNull(string $column, bool $not = false): IQuery {
-        $this->getInstanceWhere()->isNull($column, false, $not);
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->isNull($column, false, $not); return $this;
     }
 
     public function orWhereIsNull(string $column, bool $not = false): IQuery {
-        $this->getInstanceWhere()->isNull($column, true, $not); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->isNull($column, true, $not); return $this;
     }
 
     public function whereAttach(IWhere $where): IQuery {
-        $this->getInstanceWhere()->attach($where); 
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceWhere()->attach($where); return $this;
     }
 
     public function groupBy(...$columns): IQuery {
-        $this->getInstanceGroupBy()->setColumns($columns);
-        
-        return $this; // Retornando instancia como interfaz fluida
+        $this->getInstanceGroupBy()->setColumns($columns); return $this;
     }
 
     public function orderBy(string $column, bool $asc = true): IQuery {

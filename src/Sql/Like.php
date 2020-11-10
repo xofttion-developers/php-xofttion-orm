@@ -20,6 +20,6 @@ class Like extends Condition {
     // Métodos sobrescritos de la clase Condition
     
     public function getOperator(): ?string {
-        return $this->isNot() ? "NOT LIKE" : "LIKE"; // Retornando operador
+        return $this->isNot() ? "not like" : "like"; // Retornando operador
     }
 }
