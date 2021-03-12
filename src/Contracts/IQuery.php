@@ -2,6 +2,8 @@
 
 namespace Xofttion\ORM\Contracts;
 
+use Closure;
+
 use Illuminate\Database\Eloquent\Collection;
 
 use Xofttion\ORM\Contracts\IModel;
@@ -277,10 +279,17 @@ interface IQuery {
     
     /**
      * 
-     * @param IWhere $where
+     * @param string $sentence
      * @return IQuery
      */
-    public function whereAttach(IWhere $where): IQuery;
+    public function whereRaw(string $sentence): IQuery;
+    
+    /**
+     * 
+     * @param Closure $closureWhere
+     * @return IQuery
+     */
+    public function whereNested(Closure $closureWhere): IQuery;
     
     /**
      * 

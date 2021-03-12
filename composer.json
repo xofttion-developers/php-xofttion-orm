@@ -16,7 +16,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "xofttion/kernel": "dev-master",
+        "xofttion/kernel": "5.8.x-dev",
         "illuminate/database": "5.8.*"
     },
     "autoload": {

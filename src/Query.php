@@ -2,6 +2,7 @@
 
 namespace Xofttion\ORM;
 
+use Closure;
 use Illuminate\Database\Eloquent\Collection;
 
 use Xofttion\ORM\Contracts\IModel;
@@ -168,95 +169,103 @@ class Query implements IQuery {
     }
 
     public function where(string $column, string $operator, $value): IQuery {
-        $this->getInstanceWhere()->condition($column, $operator, $value); return $this;
+        $this->getWhereQuery()->condition($column, $operator, $value); return $this;
     }
 
     public function orWhere(string $column, string $operator, $value): IQuery {
-        $this->getInstanceWhere()->condition($column, $operator, $value, true); return $this;
+        $this->getWhereQuery()->condition($column, $operator, $value, true); return $this;
     }
 
     public function whereEqual(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equal($column, $value); return $this;
+        $this->getWhereQuery()->equal($column, $value); return $this;
     }
 
     public function orWhereEqual(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equal($column, $value, true); return $this;
+        $this->getWhereQuery()->equal($column, $value, true); return $this;
     }
 
     public function whereGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->greater($column, $value); return $this;
+        $this->getWhereQuery()->greater($column, $value); return $this;
     }
 
     public function orWhereGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->greater($column, $value, false); return $this; 
+        $this->getWhereQuery()->greater($column, $value, false); return $this; 
     }
 
     public function whereSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->smaller($column, $value); return $this;
+        $this->getWhereQuery()->smaller($column, $value); return $this;
     }
 
     public function orWhereSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->smaller($column, $value, true); return $this;
+        $this->getWhereQuery()->smaller($column, $value, true); return $this;
     }
 
     public function whereEqualGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalGreater($column, $value); return $this;
+        $this->getWhereQuery()->equalGreater($column, $value); return $this;
     }
 
     public function orWhereEqualGreater(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalGreater($column, $value, true); return $this;
+        $this->getWhereQuery()->equalGreater($column, $value, true); return $this;
     }
 
     public function whereEqualSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalSmaller($column, $value); return $this;
+        $this->getWhereQuery()->equalSmaller($column, $value); return $this;
     }
 
     public function orWhereEqualSmaller(string $column, $value): IQuery {
-        $this->getInstanceWhere()->equalSmaller($column, $value, true); return $this;
+        $this->getWhereQuery()->equalSmaller($column, $value, true); return $this;
     }
 
     public function whereDifferent(string $column, $value): IQuery {
-        $this->getInstanceWhere()->different($column, $value); return $this;
+        $this->getWhereQuery()->different($column, $value); return $this;
     }
 
     public function orWhereDifferent(string $column, $value): IQuery {
-        $this->getInstanceWhere()->different($column, $value, true); return $this;
+        $this->getWhereQuery()->different($column, $value, true); return $this;
     }
 
     public function whereIn(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->in($column, $value, false, $not); return $this;
+        $this->getWhereQuery()->in($column, $value, false, $not); return $this;
     }
 
     public function orWhereIn(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->in($column, $value, true, $not); return $this;
+        $this->getWhereQuery()->in($column, $value, true, $not); return $this;
     }
 
     public function whereBetween(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->between($column, $value, false, $not); return $this;
+        $this->getWhereQuery()->between($column, $value, false, $not); return $this;
     }
 
     public function orWhereBetween(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->between($column, $value, true, $not); return $this;
+        $this->getWhereQuery()->between($column, $value, true, $not); return $this;
     }
 
     public function whereLike(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->like($column, $value, false, $not); return $this;
+        $this->getWhereQuery()->like($column, $value, false, $not); return $this;
     }
 
     public function orWhereLike(string $column, $value, bool $not = false): IQuery {
-        $this->getInstanceWhere()->like($column, $value, true, $not); return $this; 
+        $this->getWhereQuery()->like($column, $value, true, $not); return $this; 
     }
 
     public function whereIsNull(string $column, bool $not = false): IQuery {
-        $this->getInstanceWhere()->isNull($column, false, $not); return $this;
+        $this->getWhereQuery()->isNull($column, false, $not); return $this;
     }
 
     public function orWhereIsNull(string $column, bool $not = false): IQuery {
-        $this->getInstanceWhere()->isNull($column, true, $not); return $this;
+        $this->getWhereQuery()->isNull($column, true, $not); return $this;
+    }
+    
+    public function whereRaw(string $sentence): IQuery {
+        $this->getWhereQuery()->raw($sentence); return $this;
     }
 
-    public function whereAttach(IWhere $where): IQuery {
-        $this->getInstanceWhere()->attach($where); return $this;
+    public function whereNested(Closure $closureWhere): IQuery {
+        $where = $this->getInstanceWhere(); // Instanciando where
+        
+        $closureWhere($where); $this->getWhereQuery()->attach($where); 
+        
+        return $this; // Retornando como interfaz fluida
     }
 
     public function groupBy(...$columns): IQuery {
@@ -357,14 +366,22 @@ class Query implements IQuery {
      * 
      * @return IWhere
      */
-    protected function getInstanceWhere() : IWhere {
+    protected function getWhereQuery(): IWhere {
         if (is_null($this->where)) {
-            $this->where = new Where(); // Inicializando Where
+            $this->where = $this->getInstanceWhere(); // Where
         }
         
         return $this->where; // Retornando Where
     }
     
+    /**
+     * 
+     * @return IWhere
+     */
+    protected function getInstanceWhere(): IWhere {
+        return new Where();
+    }
+
     /**
      * 
      * @return GroupBy|null

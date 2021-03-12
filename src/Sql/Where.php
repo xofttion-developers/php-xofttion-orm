@@ -2,6 +2,8 @@
 
 namespace Xofttion\ORM\Sql;
 
+use Closure;
+
 use Xofttion\ORM\Contracts\IWhere;
 
 class Where implements IWhere {
@@ -62,6 +64,18 @@ class Where implements IWhere {
 
     public function isNull(string $column, bool $or = false, bool $not = false): IWhere {
         array_push($this->predicates, new IsNull($column, $or, $not)); return $this; 
+    }
+    
+    public function raw(string $sentence): IWhere {
+        array_push($this->predicates, new Raw($sentence)); return $this; 
+    }
+    
+    public function nested(Closure $closureWhere): IWhere {
+        $where = new static(); // Instanciando nuevo where
+        
+        $closureWhere($where); $this->attach($where); 
+        
+        return $this; // Retornando como interfaz fluida
     }
     
     public function attach(IWhere $where): IWhere {

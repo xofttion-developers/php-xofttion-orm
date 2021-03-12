@@ -2,6 +2,8 @@
 
 namespace Xofttion\ORM\Contracts;
 
+use Closure;
+
 interface IWhere {
     
     // Métodos de la interfaz IWhere
@@ -115,6 +117,20 @@ interface IWhere {
      */
     public function isNull(string $column, bool $or = false, bool $not = false): IWhere;
     
+    /**
+     * 
+     * @param string $sentence
+     * @return IWhere
+     */
+    public function raw(string $sentence): IWhere;
+    
+    /**
+     * 
+     * @param IWhere $closureWhere
+     * @return IWhere
+     */
+    public function nested(Closure $closureWhere): IWhere;
+
     /**
      * 
      * @param IWhere $where

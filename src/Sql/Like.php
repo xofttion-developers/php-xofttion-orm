@@ -9,11 +9,11 @@ class Like extends Condition {
     /**
      * 
      * @param string $column
-     * @param array $value
+     * @param string $value
      * @param bool $or
      * @param bool $not
      */
-    public function __construct(string $column, array $value, bool $or = false, bool $not = false) {
+    public function __construct(string $column, string $value, bool $or = false, bool $not = false) {
         parent::__construct($column, null, $value, $or, $not);
     }
     
