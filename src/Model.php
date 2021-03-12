@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use Xofttion\Kernel\Contracts\IJson;
-use Xofttion\Kernel\Utils\Reflection;
+use Xofttion\Kernel\Utils\ReflectiveClass;
 use Xofttion\Kernel\Structs\Json;
 
 use Xofttion\ORM\Contracts\IModel;
@@ -23,6 +23,12 @@ use Xofttion\ORM\Utils\Builder;
 class Model extends IModel {
     
     // Atributos de clase Model
+    
+    /**
+     * 
+     * @var ReflectiveClass
+     */
+    private static $reflective;
 
     /**
      *
@@ -154,29 +160,30 @@ class Model extends IModel {
     }
     
     public function getRelationships(): ?IRelationships {
-        if (is_null($this->relationships)) {
-            return null; // Modelo no tiene relaciones establecidas
-        }
-        
-        $relationships = new Relationships(); // Relaciones del modelo
-        $reflection    = new ReflectionClass($this); // Reflexión
+        if (is_defined($this->relationships)) {
+            $reflection    = new ReflectionClass($this); // Reflexión del modelo
+            $relationships = new Relationships(); // Relaciones del modelo
 
-        foreach ($this->relationships->values() as $key => $model) {
-            $relationMethod = Reflection::obtainMethod($this, $key, $reflection);
+            foreach ($this->relationships->values() as $relationName => $model) {
+                $relationProperty = $this->getReflectiveClass()->getProperty($this, $relationName, $reflection);
 
-            if (!is_null($relationMethod)) {
-                $relationship = new Relationship($relationMethod, $model);
+                if (!is_null($relationProperty)) {
+                    $relationship = new Relationship($relationProperty, $model);
 
-                if ($relationMethod instanceof HasOneOrMany) {
-                    $relationships->attachChildren($key, $relationship);
-                }
-                else if ($relationMethod instanceof BelongsTo) {
-                    $relationships->attachParent($key, $relationship);
+                    if ($relationProperty instanceof HasOneOrMany) {
+                        $relationships->attachChildren($relationName, $relationship);
+                    }
+                    
+                    else if ($relationProperty instanceof BelongsTo) {
+                        $relationships->attachParent($relationName, $relationship);
+                    }
                 }
             }
+
+            return $relationships; // Retornando agregaciones definidas del modelo
         }
         
-        return $relationships; // Retornando agregaciones definidas del modelo
+        return null; // Modelo del proceso no tiene relaciones establecidas para mapeo
     }
     
     public function getReferences(): array {
@@ -206,6 +213,18 @@ class Model extends IModel {
     }
     
     // Métodos de la clase Model
+
+    /**
+     * 
+     * @return ReflectiveClass
+     */
+    protected function getReflectiveClass(): ReflectiveClass {
+        if (is_null(self::$reflective)) {
+            self::$reflective = new ReflectiveClass(); // Instanciando
+        }
+        
+        return self::$reflective; // Retornando instancia única
+    }
     
     /**
      * 
