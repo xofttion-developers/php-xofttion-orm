@@ -41,7 +41,7 @@ class Limit implements IClause {
      * 
      * @return int
      */
-    public function getCount() {
+    public function getCount(): int {
         return $this->count;
     }
 

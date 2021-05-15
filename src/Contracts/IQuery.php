@@ -117,7 +117,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function whereEqual(string $column, $value): IQuery;
+    public function equal(string $column, $value): IQuery;
     
     /**
      * 
@@ -125,7 +125,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function orWhereEqual(string $column, $value): IQuery;
+    public function orEqual(string $column, $value): IQuery;
     
     /**
      * 
@@ -133,7 +133,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function whereGreater(string $column, $value): IQuery;
+    public function greater(string $column, $value): IQuery;
     
     /**
      * 
@@ -141,7 +141,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function orWhereGreater(string $column, $value): IQuery;
+    public function orGreater(string $column, $value): IQuery;
     
     /**
      * 
@@ -149,7 +149,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function whereSmaller(string $column, $value): IQuery;
+    public function smaller(string $column, $value): IQuery;
     
     /**
      * 
@@ -157,7 +157,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function orWhereSmaller(string $column, $value): IQuery;
+    public function orSmaller(string $column, $value): IQuery;
     
     /**
      * 
@@ -165,7 +165,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function whereEqualGreater(string $column, $value): IQuery;
+    public function equalGreater(string $column, $value): IQuery;
     
     /**
      * 
@@ -173,7 +173,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function orWhereEqualGreater(string $column, $value): IQuery;
+    public function orEqualGreater(string $column, $value): IQuery;
     
     /**
      * 
@@ -181,7 +181,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function whereEqualSmaller(string $column, $value): IQuery;
+    public function equalSmaller(string $column, $value): IQuery;
     
     /**
      * 
@@ -189,7 +189,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function orWhereEqualSmaller(string $column, $value): IQuery;
+    public function orEqualSmaller(string $column, $value): IQuery;
     
     /**
      * 
@@ -197,7 +197,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function whereDifferent(string $column, $value): IQuery;
+    public function different(string $column, $value): IQuery;
     
     /**
      * 
@@ -205,7 +205,7 @@ interface IQuery {
      * @param object $value
      * @return IQuery
      */
-    public function orWhereDifferent(string $column, $value): IQuery;
+    public function orDifferent(string $column, $value): IQuery;
 
     /**
      * 
@@ -214,7 +214,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function whereIn(string $column, $value, bool $not = false): IQuery;
+    public function in(string $column, $value, bool $not = false): IQuery;
 
     /**
      * 
@@ -223,7 +223,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function orWhereIn(string $column, $value, bool $not = false): IQuery;
+    public function orIn(string $column, $value, bool $not = false): IQuery;
     
     /**
      * 
@@ -232,7 +232,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function whereLike(string $column, $value, bool $not = false): IQuery;
+    public function like(string $column, $value, bool $not = false): IQuery;
     
     /**
      * 
@@ -241,7 +241,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function orWhereLike(string $column, $value, bool $not = false): IQuery;
+    public function orLike(string $column, $value, bool $not = false): IQuery;
     
     /**
      * 
@@ -250,7 +250,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function whereBetween(string $column, $value, bool $not = false): IQuery;
+    public function between(string $column, $value, bool $not = false): IQuery;
     
     /**
      * 
@@ -259,7 +259,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function orWhereBetween(string $column, $value, bool $not = false): IQuery;
+    public function orBetween(string $column, $value, bool $not = false): IQuery;
     
     /**
      * 
@@ -267,7 +267,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function whereIsNull(string $column, bool $not = false): IQuery;
+    public function isNull(string $column, bool $not = false): IQuery;
     
     /**
      * 
@@ -275,7 +275,7 @@ interface IQuery {
      * @param bool $not
      * @return IQuery
      */
-    public function orWhereIsNull(string $column, bool $not = false): IQuery;
+    public function orIsNull(string $column, bool $not = false): IQuery;
     
     /**
      * 
@@ -289,14 +289,14 @@ interface IQuery {
      * @param Closure $closureWhere
      * @return IQuery
      */
-    public function whereNested(Closure $closureWhere): IQuery;
+    public function nested(Closure $closureWhere): IQuery;
     
     /**
      * 
      * @param array $columns
      * @return IQuery
      */
-    public function groupBy(...$columns): IQuery;
+    public function groupBy(array $columns): IQuery;
 
     /**
      * 
@@ -306,6 +306,26 @@ interface IQuery {
      */
     public function orderBy(string $column, bool $asc = true): IQuery;
     
+    /**
+     * 
+     * @param string $relation
+     * @param string $relationColumn
+     * @param string $parentColumn
+     * @param string $operator
+     * @return IQuery
+     */
+    public function innerJoin(string $relation, string $relationColumn, string $parentColumn, string $operator = "="): IQuery;
+    
+    /**
+     * 
+     * @param string $relation
+     * @param string $relationColumn
+     * @param string $parentColumn
+     * @param string $operator
+     * @return IQuery
+     */
+    public function leftJoin(string $relation, string $relationColumn, string $parentColumn, string $operator = "="): IQuery;
+
     /**
      * 
      * @param int $count

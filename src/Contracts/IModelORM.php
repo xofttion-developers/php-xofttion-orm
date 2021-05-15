@@ -137,7 +137,7 @@ interface IModelORM {
      * 
      * @return array
      */
-    public function getModifiables(): array;
+    public function getUnchangeables(): array;
     
     /**
      * 

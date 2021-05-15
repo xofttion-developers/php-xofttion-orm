@@ -52,7 +52,7 @@ class Model extends IModel {
      *
      * @var array 
      */
-    protected $modifiables = [];
+    protected $unchangeables = [];
     
     /**
      *
@@ -190,8 +190,8 @@ class Model extends IModel {
         return $this->references;
     }
     
-    public function getModifiables(): array {
-        return $this->modifiables;
+    public function getUnchangeables(): array {
+        return $this->unchangeables;
     }
     
     public function getNulleables(): array {

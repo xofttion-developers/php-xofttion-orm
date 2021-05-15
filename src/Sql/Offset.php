@@ -41,7 +41,7 @@ class Offset implements IClause {
      * 
      * @return int
      */
-    public function getValue() {
+    public function getValue(): int {
         return $this->value;
     }
 

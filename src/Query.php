@@ -11,6 +11,8 @@ use Xofttion\ORM\Contracts\IWhere;
 use Xofttion\ORM\Sql\Where;
 use Xofttion\ORM\Sql\GroupBy;
 use Xofttion\ORM\Sql\OrderBy;
+use Xofttion\ORM\Sql\InnerJoin;
+use Xofttion\ORM\Sql\LeftJoin;
 use Xofttion\ORM\Sql\Limit;
 use Xofttion\ORM\Sql\Offset;
 use Xofttion\ORM\Utils\Builder;
@@ -41,13 +43,19 @@ class Query implements IQuery {
      *
      * @var GroupBy 
      */
-    private $group;
+    private $groupBy;
     
     /**
      *
      * @var array 
      */
-    private $orders;
+    private $ordersBy;
+    
+    /**
+     *
+     * @var array 
+     */
+    private $joins;
     
     /**
      *
@@ -103,7 +111,7 @@ class Query implements IQuery {
         $model = $this->getModel(); // Modelo para gestionar consulta
         
         if (!is_null($id)) {
-            $this->whereEqual($model->getPrimaryKey(), $id);
+            $this->equal($model->getPrimaryKey(), $id);
         } // Se debe agregar filtro de PrimaryKey
         
         return $this->getBuilder($model)->select($columns)->first();
@@ -114,7 +122,7 @@ class Query implements IQuery {
         $relations = $this->getReferencesFormat($model, $references);
         
         if (!is_null($id)) {
-            $this->whereEqual($model->getPrimaryKey(), $id);
+            $this->equal($model->getPrimaryKey(), $id);
         } // Se debe agregar filtro de PrimaryKey
         
         return $this->getBuilder($model)->with($relations)->first();
@@ -139,7 +147,7 @@ class Query implements IQuery {
     public function safeguard(int $id, array $data, ?array $hidrations = null): ?IModel {
         $model = $this->getModel(); // Modelo para gestionar proceso
         
-        $this->whereEqual($model->getPrimaryKey(), $id); // Llave primaria
+        $this->equal($model->getPrimaryKey(), $id); // Llave primaria
         
         $dataFormat = $this->dettachModifiableValues($model, $data);
         
@@ -162,7 +170,7 @@ class Query implements IQuery {
         $model = $this->getModel(); // Modelo para gestionar consulta
         
         if (!is_null($id)) {
-            $this->whereEqual($model->getPrimaryKey(), $id);
+            $this->equal($model->getPrimaryKey(), $id);
         } // Se debe agregar filtro de PrimaryKey
         
         return ($this->getBuilder($model, false)->delete() > 0);
@@ -176,83 +184,83 @@ class Query implements IQuery {
         $this->getWhereQuery()->condition($column, $operator, $value, true); return $this;
     }
 
-    public function whereEqual(string $column, $value): IQuery {
+    public function equal(string $column, $value): IQuery {
         $this->getWhereQuery()->equal($column, $value); return $this;
     }
 
-    public function orWhereEqual(string $column, $value): IQuery {
+    public function orEqual(string $column, $value): IQuery {
         $this->getWhereQuery()->equal($column, $value, true); return $this;
     }
 
-    public function whereGreater(string $column, $value): IQuery {
+    public function greater(string $column, $value): IQuery {
         $this->getWhereQuery()->greater($column, $value); return $this;
     }
 
-    public function orWhereGreater(string $column, $value): IQuery {
+    public function orGreater(string $column, $value): IQuery {
         $this->getWhereQuery()->greater($column, $value, false); return $this; 
     }
 
-    public function whereSmaller(string $column, $value): IQuery {
+    public function smaller(string $column, $value): IQuery {
         $this->getWhereQuery()->smaller($column, $value); return $this;
     }
 
-    public function orWhereSmaller(string $column, $value): IQuery {
+    public function orSmaller(string $column, $value): IQuery {
         $this->getWhereQuery()->smaller($column, $value, true); return $this;
     }
 
-    public function whereEqualGreater(string $column, $value): IQuery {
+    public function equalGreater(string $column, $value): IQuery {
         $this->getWhereQuery()->equalGreater($column, $value); return $this;
     }
 
-    public function orWhereEqualGreater(string $column, $value): IQuery {
+    public function orEqualGreater(string $column, $value): IQuery {
         $this->getWhereQuery()->equalGreater($column, $value, true); return $this;
     }
 
-    public function whereEqualSmaller(string $column, $value): IQuery {
+    public function equalSmaller(string $column, $value): IQuery {
         $this->getWhereQuery()->equalSmaller($column, $value); return $this;
     }
 
-    public function orWhereEqualSmaller(string $column, $value): IQuery {
+    public function orEqualSmaller(string $column, $value): IQuery {
         $this->getWhereQuery()->equalSmaller($column, $value, true); return $this;
     }
 
-    public function whereDifferent(string $column, $value): IQuery {
+    public function different(string $column, $value): IQuery {
         $this->getWhereQuery()->different($column, $value); return $this;
     }
 
-    public function orWhereDifferent(string $column, $value): IQuery {
+    public function orDifferent(string $column, $value): IQuery {
         $this->getWhereQuery()->different($column, $value, true); return $this;
     }
 
-    public function whereIn(string $column, $value, bool $not = false): IQuery {
+    public function in(string $column, $value, bool $not = false): IQuery {
         $this->getWhereQuery()->in($column, $value, false, $not); return $this;
     }
 
-    public function orWhereIn(string $column, $value, bool $not = false): IQuery {
+    public function orIn(string $column, $value, bool $not = false): IQuery {
         $this->getWhereQuery()->in($column, $value, true, $not); return $this;
     }
 
-    public function whereBetween(string $column, $value, bool $not = false): IQuery {
+    public function between(string $column, $value, bool $not = false): IQuery {
         $this->getWhereQuery()->between($column, $value, false, $not); return $this;
     }
 
-    public function orWhereBetween(string $column, $value, bool $not = false): IQuery {
+    public function orBetween(string $column, $value, bool $not = false): IQuery {
         $this->getWhereQuery()->between($column, $value, true, $not); return $this;
     }
 
-    public function whereLike(string $column, $value, bool $not = false): IQuery {
+    public function like(string $column, $value, bool $not = false): IQuery {
         $this->getWhereQuery()->like($column, $value, false, $not); return $this;
     }
 
-    public function orWhereLike(string $column, $value, bool $not = false): IQuery {
+    public function orLike(string $column, $value, bool $not = false): IQuery {
         $this->getWhereQuery()->like($column, $value, true, $not); return $this; 
     }
 
-    public function whereIsNull(string $column, bool $not = false): IQuery {
+    public function isNull(string $column, bool $not = false): IQuery {
         $this->getWhereQuery()->isNull($column, false, $not); return $this;
     }
 
-    public function orWhereIsNull(string $column, bool $not = false): IQuery {
+    public function orIsNull(string $column, bool $not = false): IQuery {
         $this->getWhereQuery()->isNull($column, true, $not); return $this;
     }
     
@@ -260,7 +268,7 @@ class Query implements IQuery {
         $this->getWhereQuery()->raw($sentence); return $this;
     }
 
-    public function whereNested(Closure $closureWhere): IQuery {
+    public function nested(Closure $closureWhere): IQuery {
         $where = $this->getInstanceWhere(); // Instanciando where
         
         $closureWhere($where); $this->getWhereQuery()->attach($where); 
@@ -268,23 +276,43 @@ class Query implements IQuery {
         return $this; // Retornando como interfaz fluida
     }
 
-    public function groupBy(...$columns): IQuery {
-        $this->getInstanceGroupBy()->setColumns($columns); return $this;
+    public function groupBy(array $columns): IQuery {
+        $this->getInstanceGroupBy($columns); return $this;
     }
 
     public function orderBy(string $column, bool $asc = true): IQuery {
-        if (is_null($this->orders)) {
-            $this->orders = []; // Inicializando listado
+        if (is_null($this->ordersBy)) {
+            $this->ordersBy = []; // Inicializando listado Orders
         }
         
-        array_push($this->orders, new OrderBy($column, $asc)); 
+        array_push($this->ordersBy, new OrderBy($column, $asc)); 
+        
+        return $this; // Retornando instancia como interfaz fluida
+    }
+    
+    public function innerJoin(string $relation, string $relationColumn, string $parentColumn, string $operator = "="): IQuery {
+        if (is_null($this->joins)) {
+            $this->joins = []; // Inicializando listado de Joins
+        }
+        
+        array_push($this->joins, new InnerJoin($relation, $relationColumn, $parentColumn, $operator)); 
+        
+        return $this; // Retornando instancia como interfaz fluida
+    }
+    
+    public function leftJoin(string $relation, string $relationColumn, string $parentColumn, string $operator = "="): IQuery {
+        if (is_null($this->joins)) {
+            $this->joins = []; // Inicializando listado de Joins
+        }
+        
+        array_push($this->joins, new LeftJoin($relation, $relationColumn, $parentColumn, $operator)); 
         
         return $this; // Retornando instancia como interfaz fluida
     }
 
     public function limit(int $count): IQuery {
         if (is_null($this->clauses)) {
-            $this->clauses = []; // Inicializando claúsulas
+            $this->clauses = []; // Inicializando listado claúsulas
         }
         
         array_push($this->clauses, new Limit($count));
@@ -294,7 +322,7 @@ class Query implements IQuery {
 
     public function offset(int $value): IQuery {
         if (is_null($this->clauses)) {
-            $this->clauses = []; // Inicializando claúsulas
+            $this->clauses = []; // Inicializando listado claúsulas
         }
         
         array_push($this->clauses, new Offset($value));
@@ -345,9 +373,9 @@ class Query implements IQuery {
     private function dettachModifiableValues(IModel $model, array $data): array {
         $dataFormat = $this->attachNulleableValues($model, $data); // Formateando
         
-        foreach ($model->getModifiables() as $modifiable) {
-            if (isset($dataFormat[$modifiable])) {
-                unset($dataFormat[$modifiable]); // Removiendo clave inmodificable
+        foreach ($model->getUnchangeables() as $unchangeable) {
+            if (isset($dataFormat[$unchangeable])) {
+                unset($dataFormat[$unchangeable]); // Removiendo clave inmodificable
             }
         }
         
@@ -387,19 +415,19 @@ class Query implements IQuery {
      * @return GroupBy|null
      */
     protected function getGroupBy(): ?GroupBy {
-        return $this->group;
+        return $this->groupBy;
     }
     
     /**
      * 
      * @return GroupBy
      */
-    protected function getInstanceGroupBy() : GroupBy {
-        if (is_null($this->group)) {
-            $this->group = new GroupBy(); // Inicializando GroupBy
+    protected function getInstanceGroupBy(array $columns) : GroupBy {
+        if (is_null($this->groupBy)) {
+            $this->groupBy = new GroupBy($columns); // GroupBy
         }
         
-        return $this->group; // Retornando GroupBy
+        return $this->groupBy; // Retornando GroupBy
     }
     
     /**
@@ -407,7 +435,15 @@ class Query implements IQuery {
      * @return array|null
      */
     protected function getOrders(): ?array {
-        return $this->orders;
+        return $this->ordersBy;
+    }
+    
+    /**
+     * 
+     * @return array|null
+     */
+    protected function getJoins(): ?array {
+        return $this->joins;
     }
     
     /**
@@ -432,7 +468,8 @@ class Query implements IQuery {
         if ($isSelect) {
             $this->flushQueryGroups($builder);  // Agrupadores
             $this->flushQueryOrders($builder);  // Ordenadores
-            $this->flushQueryExtras($builder);  // Claúsulas adicionales
+            $this->flushQueryJoins($builder);   // Joins
+            $this->flushQueryClauses($builder); // Claúsulas
         }
         
         return $builder; // Retornando builder generado para proceso
@@ -464,7 +501,7 @@ class Query implements IQuery {
      * @return void
      */
     private function flushQueryGroups(Builder $builder): void {
-        if (!is_null($this->getGroupBy())) {
+        if (is_defined($this->getGroupBy())) {
             $this->getGroupBy()->flush($builder); // Cargando clausula 'GROUP BY'
         }
     }
@@ -487,7 +524,20 @@ class Query implements IQuery {
      * @param Builder $builder
      * @return void
      */
-    private function flushQueryExtras(Builder $builder): void {
+    private function flushQueryJoins(Builder $builder): void {
+        if (is_array($this->getJoins())) {
+            foreach ($this->getJoins() as $join) {
+                $join->flush($builder); // Cargando claúsula
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param Builder $builder
+     * @return void
+     */
+    private function flushQueryClauses(Builder $builder): void {
         if (is_array($this->getClauses())) {
             foreach ($this->getClauses() as $clause) {
                 $clause->flush($builder); // Cargando claúsula

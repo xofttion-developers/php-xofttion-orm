@@ -22,7 +22,7 @@ class GroupBy implements IClause {
      * 
      * @param array $columns
      */
-    public function __construct(...$columns) {
+    public function __construct(array $columns) {
         $this->setColumns($columns);
     }
     
@@ -33,15 +33,15 @@ class GroupBy implements IClause {
      * @param array $columns
      * @return void
      */
-    public function setColumns(...$columns): void {
+    public function setColumns(array $columns): void {
         $this->columns = $columns;
     }
     
     /**
      * 
-     * @return array|null
+     * @return array
      */
-    public function getColumns() {
+    public function getColumns(): array {
         return $this->columns;
     }
 
