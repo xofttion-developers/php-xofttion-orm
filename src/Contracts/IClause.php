@@ -4,8 +4,9 @@ namespace Xofttion\ORM\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 
-interface IClause {
-    
+interface IClause
+{
+
     /**
      * 
      * @param Builder $builder
