@@ -32,6 +32,18 @@ class Query implements IQuery
      * @var string 
      */
     protected $model;
+    
+    /**
+     *
+     * @var string
+     */
+    private $table;
+    
+    /**
+     *
+     * @var bool
+     */
+    private $sqlLog = false;
 
     /**
      *
@@ -74,7 +86,7 @@ class Query implements IQuery
 
     public function setContext(?string $context): void
     {
-        if (!is_null($context)) {
+        if (is_defined($context)) {
             $this->context = $context; // Conexión
         }
     }
@@ -92,19 +104,44 @@ class Query implements IQuery
 
         return $model;
     }
+    
+    public function setTable(string $table): void {
+        $this->table = $table;
+    }
+    
+    public function activeSqlLog(): void {
+        $this->sqlLog = true;
+    }
 
     public function insert(array $data, ?array $hidrations = null): IModel
     {
         $model = $this->getModel();
         $model->register($data);
-
-        return is_null($hidrations) ? $model : empty($hidrations) ? 
-            $model : $model->fresh($hidrations);
+        
+        if (is_null($hidrations) || empty($hidrations)) {
+            return $model;
+        } 
+        else {
+            return $model->fresh($hidrations);
+        }
     }
 
-    public function rows(array $columns = ["*"]): Collection
+    public function rows(array $columns = ["*"], ?array $references = null): Collection
     {
-        return $this->getBuilder($this->getModel())->select($columns)->get();
+        $model = $this->getModel();
+        
+        $builder = $this->getBuilder($model);
+        $builder->select($columns);
+        
+        if (is_defined($references)) {
+            $relations = $this->getReferencesFormat($model, $references);
+            
+            $builder->with($relations);
+        }
+        
+        $this->builderLog($builder);
+        
+        return $builder->get();
     }
 
     public function catalog(?array $references = null): Collection
@@ -112,8 +149,13 @@ class Query implements IQuery
         $model = $this->getModel();
         
         $relations = $this->getReferencesFormat($model, $references);
+        
+        $builder = $this->getBuilder($model);
+        $builder->with($relations);
+        
+        $this->builderLog($builder);
 
-        return $this->getBuilder($model)->with($relations)->get();
+        return $builder->get();
     }
 
     public function find(?int $id = null, array $columns = ["*"]): ?IModel
@@ -123,8 +165,13 @@ class Query implements IQuery
         if (!is_null($id)) {
             $this->equal($model->getPrimaryKey(), $id);
         }
+        
+        $builder = $this->getBuilder($model);
+        $builder->select($columns);
+        
+        $this->builderLog($builder);
 
-        return $this->getBuilder($model)->select($columns)->first();
+        return $builder->first();
     }
 
     public function record(?int $id = null, ?array $references = null): ?IModel
@@ -136,8 +183,13 @@ class Query implements IQuery
         if (!is_null($id)) {
             $this->equal($model->getPrimaryKey(), $id);
         }
+        
+        $builder = $this->getBuilder($model);
+        $builder->with($relations);
+        
+        $this->builderLog($builder);
 
-        return $this->getBuilder($model)->with($relations)->first();
+        return $builder->first();
     }
 
     public function update(int $id, array $data): ?IModel
@@ -190,8 +242,10 @@ class Query implements IQuery
         if (!is_null($id)) {
             $this->equal($model->getPrimaryKey(), $id);
         }
+        
+        $builder = $this->getBuilder($model, false);
 
-        return ($this->getBuilder($model, false)->delete() > 0);
+        return $builder->delete() > 0;
     }
 
     public function where(string $column, string $operator, $value): IQuery
@@ -437,11 +491,13 @@ class Query implements IQuery
      */
     private function getReferencesFormat(IModel $model, ?array $references): array
     {
+        $mapper = $model->getMapper();
+        
         if (is_null($references)) {
-            return $model->getMapper()->getReferencesFormat($model->getReferences());
+            return $mapper->getReferencesFormat($model->getReferences());
         }
         else {
-            return $model->getMapper()->getReferencesFormat($references);
+            return $mapper->getReferencesFormat($references);
         }
     }
 
@@ -572,6 +628,10 @@ class Query implements IQuery
     protected function getBuilder(Model $model, bool $isSelect = true): Builder
     {
         $builder = $model->newBuilder();
+        
+        if (is_defined($this->table)) {
+            $builder->setTable($this->table);
+        }
 
         $this->flushQueryWhere($builder, $this->getWhere());
 
@@ -658,6 +718,19 @@ class Query implements IQuery
             foreach ($this->getClauses() as $clause) {
                 $clause->flush($builder);
             }
+        }
+    }
+    
+    /**
+     * 
+     * @param Builder $builder
+     * @return void
+     */
+    private function builderLog(Builder $builder): void {
+        $sqlLog = env("DB_SQL_LOG", false);
+        
+        if ($sqlLog || $this->sqlLog) {
+            console_log($builder->toSql());
         }
     }
 }
