@@ -29,6 +29,19 @@ interface IQuery
      * @return IModel
      */
     public function getModel(): IModel;
+    
+    /**
+     * 
+     * @param string $table
+     * @return void
+     */
+    public function setTable(string $table): void;
+    
+    /**
+     * 
+     * @return void
+     */
+    public function activeSqlLog(): void;
 
     /**
      * 
@@ -41,9 +54,10 @@ interface IQuery
     /**
      * 
      * @param array $columns
+     * @param array|null $references
      * @return Collection
      */
-    public function rows(array $columns = ["*"]): Collection;
+    public function rows(array $columns = ["*"], ?array $references = null): Collection;
 
     /**
      * 

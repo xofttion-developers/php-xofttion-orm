@@ -46,8 +46,12 @@ class ModelMapper implements IModelMapper
         if (is_null($data)) {
             return null;
         }
+        
+        $conversions = $model->getConversions();
+        
+        $dataFormat = $this->getDataFormat($data, $conversions);
 
-        $model->setData($this->getDataFormat($data, $model->getConversions()));
+        $model->setData($dataFormat);
 
         return $model;
     }
