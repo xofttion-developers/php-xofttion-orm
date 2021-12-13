@@ -16,8 +16,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "xofttion/kernel": "5.8.x-dev",
-        "illuminate/database": "5.8.*"
+        "xofttion/kernel": "7.0.x-dev",
+        "illuminate/database": "7.0.*"
     },
     "autoload": {
         "psr-4": {
